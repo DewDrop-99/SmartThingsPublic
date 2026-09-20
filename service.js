@@ -6,7 +6,7 @@
     var urlLib = require("url");
     var crypto = require("crypto");
 
-    var PORT = 8767;
+    var PORT = 8768;
     var API_KEY = "NDzZTVxnRKP8Z0jXg1VAMonaG8akvh";
     var API_SECRET = "16CCEB3D-AB42-077D-36A1-F355324E4237";
 
@@ -175,15 +175,31 @@
             var method = String(env.method || "GET").toUpperCase();
             var bodyText = typeof env.bodyText === "string" ? env.bodyText : "";
 
+            if (env.hashPassword && bodyText) {
+                try {
+                    var loginBody = JSON.parse(bodyText);
+                    if (loginBody && typeof loginBody.password === "string") {
+                        loginBody.password = crypto.createHash("sha256")
+                            .update(loginBody.password, "utf8")
+                            .digest("hex");
+                        bodyText = JSON.stringify(loginBody);
+                    }
+                } catch (e) {}
+            }
+
             if (!host || !apiPath || apiPath.charAt(0) !== "/") {
                 send(res, 400, JSON.stringify({ code: 400, msg: "invalid Fygo target", data: null }));
                 return;
             }
 
             var target = protocol + "://" + host + (port ? ":" + port : "") + apiPath;
+            var origin = protocol + "://" + host + (port ? ":" + port : "");
             var headers = {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
+                "User-Agent": "Mozilla/5.0 (Linux; Tizen 4.0) AppleWebKit/537.36 Safari/537.36",
+                "Referer": origin + "/v",
+                "Cookie": "mode=relay",
                 "x-access-source": "app",
                 "x-device-id": String(env.deviceId || "tizen-tv"),
                 "X-Trim-Client-Version": "1.3.3",
