@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=1920,initial-scale=1">
-<title>Fygo TV</title>
+<title>Fygo TV</title>\n<meta name="fygo-live" content="FYGO_LIVE_APP">
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;background:#1d1d1f;color:#fff;font-family:Arial,Helvetica,sans-serif;overflow:hidden}
@@ -114,6 +114,7 @@ button{cursor:pointer}
 .searchPanel input{width:720px;height:64px;background:#2b2b2f;border:2px solid #48484e;border-radius:15px;padding:0 19px;font-size:26px}
 .searchPanel button{height:64px}
 .settingsCard{background:#29292d;border-radius:20px;padding:30px;max-width:900px}
+.devBuild{position:absolute;right:145px;top:37px;z-index:25;color:#a7a8ac;background:#2a2a2d;border:1px solid #45464b;border-radius:8px;padding:6px 10px;font-size:17px}
 </style>
 </head>
 <body>
@@ -141,7 +142,7 @@ button{cursor:pointer}
 <div id="app" class="hide">
   <div class="topbar">
     <div class="logo"><span class="logoMark"></span><span>Fygo TV</span></div>
-    <button id="topSearch" class="searchBtn focusable" aria-label="Pesquisar"></button>
+    <span class="devBuild">LIVE 0.7.1</span><button id="topSearch" class="searchBtn focusable" aria-label="Pesquisar"></button>
   </div>
   <div id="mainScroll" class="mainScroll"></div>
   <div class="bottomNav">
@@ -216,7 +217,7 @@ var ROOT='http://127.0.0.1:8770';
 var PROXY=ROOT+'/fygo';
 var LS='fygo_tb_cfg_v2';
 var DEVLS='fygo_tb_device_v1';
-var cfg={},tempPassword='',libraries=[],homeItems=[],currentItem=null,currentPlay=null,currentStreams=null,currentPeople=[],lastView='home';var LIVE_BUILD='0.6.5';
+var cfg={},tempPassword='',libraries=[],homeItems=[],currentItem=null,currentPlay=null,currentStreams=null,currentPeople=[],lastView='home';var LIVE_BUILD='0.7.1';
 
 function q(id){return document.getElementById(id)}
 function esc(v){return String(v==null?'':v).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
