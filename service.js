@@ -6,7 +6,7 @@
     var urlLib = require("url");
     var crypto = require("crypto");
 
-    var PORT = 8768;
+    var PORT = 8769;
     var API_KEY = "NDzZTVxnRKP8Z0jXg1VAMonaG8akvh";
     var API_SECRET = "16CCEB3D-AB42-077D-36A1-F355324E4237";
 
@@ -22,6 +22,33 @@
         } catch (e) {
             return String(value || "");
         }
+    }
+
+    // Mirrors Fygo TV Android 1.3.3's first OkHttp interceptor (LkI):
+    // selected public API paths are rewritten to their /intl/ equivalents
+    // before HeaderInsertInterceptor and SignerInterceptor run.
+    function rewriteFygoPath(path) {
+        var full = String(path || "");
+        var q = full.indexOf("?");
+        var pathname = q >= 0 ? full.substring(0, q) : full;
+        var query = q >= 0 ? full.substring(q) : "";
+
+        var exact = {
+            "/v/api/v1/login": "/v/api/intl/v1/login",
+            "/v/api/v2/user/loginByPassword": "/v/api/intl/v2/user/loginByPassword",
+            "/v/api/v1/logincode/generate": "/v/api/intl/v1/logincode/generate",
+            "/v/api/v1/user/status/check": "/v/api/intl/v1/user/status/check",
+            "/v/api/v1/sys/config": "/v/api/intl/v1/sys/config"
+        };
+
+        if (Object.prototype.hasOwnProperty.call(exact, pathname)) {
+            pathname = exact[pathname];
+        } else if (pathname.indexOf("/v/api/v1/logincode/") === 0) {
+            pathname = "/v/api/intl/v1/logincode/" +
+                pathname.substring("/v/api/v1/logincode/".length);
+        }
+
+        return pathname + query;
     }
 
     // Matches the Android SignerInterceptor behaviour for GET requests:
@@ -192,24 +219,19 @@
                 return;
             }
 
-            var target = protocol + "://" + host + (port ? ":" + port : "") + apiPath;
-            var origin = protocol + "://" + host + (port ? ":" + port : "");
+            var wirePath = rewriteFygoPath(apiPath);
+            var target = protocol + "://" + host + (port ? ":" + port : "") + wirePath;
             var headers = {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
-                "User-Agent": "Mozilla/5.0 (Linux; Tizen 4.0) AppleWebKit/537.36 Safari/537.36",
-                "Referer": origin + "/v",
+                "User-Agent": "okhttp/4.12.0",
+                "Authorization": String(env.token || ""),
                 "Cookie": "mode=relay",
                 "x-access-source": "app",
                 "x-device-id": String(env.deviceId || "tizen-tv"),
-                "X-Trim-Client-Version": "1.3.3",
-                "authx": makeAuthx(apiPath, method, bodyText)
+                "X-Trim-Client-Version": "13308",
+                "authx": makeAuthx(wirePath, method, bodyText)
             };
-
-            if (env.token) {
-                headers["Authorization"] = String(env.token);
-                headers["Cookie"] = "mode=relay; Trim-MC-token=" + String(env.token);
-            }
             if (env.accessCode) {
                 headers["x-access-code"] = Buffer.from(String(env.accessCode), "utf8").toString("base64");
             }
