@@ -6,7 +6,7 @@
     var urlLib = require("url");
     var crypto = require("crypto");
 
-    var PORT = 8766;
+    var PORT = 8767;
     var API_KEY = "NDzZTVxnRKP8Z0jXg1VAMonaG8akvh";
     var API_SECRET = "16CCEB3D-AB42-077D-36A1-F355324E4237";
 
@@ -190,7 +190,13 @@
                 "authx": makeAuthx(apiPath, method, bodyText)
             };
 
-            if (env.accessCode) headers["x-access-code"] = String(env.accessCode);
+            if (env.token) {
+                headers["Authorization"] = String(env.token);
+                headers["Cookie"] = "mode=relay; Trim-MC-token=" + String(env.token);
+            }
+            if (env.accessCode) {
+                headers["x-access-code"] = Buffer.from(String(env.accessCode), "utf8").toString("base64");
+            }
             if (bodyText && method !== "GET" && method !== "HEAD") {
                 headers["Content-Length"] = Buffer.byteLength(bodyText, "utf8");
             }
