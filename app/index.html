@@ -95,6 +95,68 @@ svg{display:block}
 .searchLine{display:flex;gap:16px;margin:10px 0 28px}.searchLine input{width:760px;height:65px;background:#29292d;border:2px solid #4c4c51;border-radius:14px;padding:0 18px;font-size:25px}
 .empty{font-size:23px;color:#aaa;padding:35px 0}
 </style>
+
+<style id="tizen4-compat">
+/* Tizen 4 / old Chromium: use viewport geometry directly.
+   Do not scale a virtual 1920x1080 canvas: TizenBrew already maps its webview to the TV. */
+#stage{left:0!important;top:0!important;width:100vw!important;height:100vh!important;transform:none!important}
+.topbar{height:10.5vh!important;padding:2.5vh 4vw 1vh!important}
+.logoSvg{width:15vw!important;height:6.7vh!important}
+.topSearch{width:4vw!important;height:4vw!important;padding:.55vw!important}
+.mainScroll{top:10.5vh!important;bottom:10.8vh!important;padding:.5vh 4vw 4vh!important}
+.heroRow{display:-webkit-box!important;display:flex!important;width:100%!important;margin-top:.8vh!important}
+.libraryCard{display:block!important;width:19vw!important;min-width:19vw!important;max-width:19vw!important;height:17vh!important;min-height:17vh!important;margin-right:1.5vw!important;border-width:3px!important;border-radius:1.1vw!important}
+.libraryCollage{display:-webkit-box!important;display:flex!important;width:100%!important;height:12.5vh!important}
+.libraryCollage img,.libraryCollage .ph{display:block!important;width:6.33vw!important;min-width:6.33vw!important;height:12.5vh!important;object-fit:cover!important}
+.libraryName{height:5.4vh!important;font-size:1.45vw!important}
+.stats{display:-webkit-box!important;display:flex!important;width:75vw!important;overflow:hidden!important}
+.statCard{display:block!important;width:13.5vw!important;min-width:13.5vw!important;max-width:13.5vw!important;height:12.5vh!important;margin-right:1.15vw!important;border-radius:1.1vw!important}
+.statName{font-size:1.32vw!important}.statValue{font-size:1.42vw!important;margin-top:.7vh!important}
+.sectionHead{font-size:1.6vw!important;margin:2.3vh 0 1.3vh!important}
+.sectionHead .arrow{font-size:2vw!important;margin-left:.55vw!important}
+.rail{display:-webkit-box!important;display:flex!important;padding:.6vh .3vw 2vh!important;overflow-x:auto!important}
+.posterCard{display:block!important;width:12vw!important;min-width:12vw!important;max-width:12vw!important;margin-right:1.15vw!important;border-radius:.8vw!important}
+.posterImg{width:12vw!important;height:31.6vh!important;border-radius:.8vw!important}
+.score{left:.45vw!important;top:.7vh!important;font-size:.9vw!important;padding:.45vh .4vw!important}
+.posterFlag{right:.4vw!important;bottom:.6vh!important;font-size:.86vw!important;padding:.3vh .38vw!important}
+.cardTitle{font-size:1.22vw!important;margin-top:.9vh!important}.cardMeta{font-size:1.05vw!important;margin-top:.45vh!important}
+.bottomNav{height:10.8vh!important;display:-webkit-box!important;display:flex!important}
+.navBtn{width:9.5vw!important;height:8.2vh!important;margin:0 4.2vw!important;font-size:.95vw!important}
+.navIcon{width:1.9vw!important;height:1.9vw!important}.avatar{width:1.9vw!important;height:1.9vw!important;font-size:.9vw!important}
+
+/* Detail screen */
+.detailBackdrop{height:67vh!important}
+.detailTop{left:2.9vw!important;right:2.9vw!important;top:3.2vh!important}
+.roundBtn{width:3.4vw!important;height:3.4vw!important;padding:.65vw!important}
+.detailScroll{padding:36vh 4vw 6vh!important}
+.detailTitle{font-size:2.8vw!important;max-width:67vw!important;margin-bottom:1vh!important}
+.meta{font-size:1.28vw!important;max-width:70vw!important}
+.streamLine{margin-top:1.2vh!important;min-height:4vh!important}
+.streamText{font-size:1.2vw!important;margin-right:1.25vw!important}
+.techBadge{height:3.2vh!important;padding:0 .5vw!important;font-size:.95vw!important;margin-right:.5vw!important}
+.detailProgress{width:42vw!important;margin-top:1.5vh!important}
+.progressText{font-size:1.1vw!important}
+.detailActions{margin:2.1vh 0!important}
+.playBig{height:7.6vh!important;min-width:17vw!important;padding:0 2.2vw!important;border-radius:4vh!important;font-size:1.48vw!important;margin-right:1.1vw!important}
+.actionCircle{width:4.3vw!important;height:4.3vw!important;padding:1.05vw!important;margin-right:.8vw!important}
+.qualityLine{margin:0 0 2.2vh!important}.qualityChip{font-size:1.18vw!important;padding:1vh 1.25vw!important}
+.overview{font-size:1.25vw!important;max-width:70vw!important;line-height:1.42!important}
+.castTitle{font-size:1.48vw!important;margin:2.4vh 0 1.3vh!important}
+.castPerson{width:6.8vw!important;margin-right:1.45vw!important}.castPhoto{width:6vw!important;height:6vw!important}.castName{font-size:.9vw!important}
+#detailMenu{right:3vw!important;top:10vh!important;width:18vw!important}
+.menuBtn{height:5.5vh!important;font-size:1.05vw!important}
+
+/* Player */
+.playerHud{padding:10vh 3.8vw 3.5vh!important}
+.playerTitle{font-size:1.55vw!important;margin-bottom:1.4vh!important}
+.playerTime{width:4.7vw!important;font-size:.95vw!important}
+.playerControls{margin-top:1.3vh!important}
+.playerBtn{height:5.5vh!important;min-width:4vw!important;padding:1vh 1vw!important;margin-right:.8vw!important}
+.playerError{font-size:1.05vw!important}
+.searchLine input{width:40vw!important;height:6vh!important;font-size:1.25vw!important}
+.libraryTab{height:5.6vh!important;margin-right:.75vw!important;padding:0 1.2vw!important}
+.settingsBox{max-width:48vw!important;padding:2.3vh 1.6vw!important}
+</style>
 </head>
 <body>
 <div id="stage">
@@ -182,7 +244,7 @@ function posterOf(i){return assetValue(pick(i,['poster','posters','poster_list',
 function backdropOf(i){return assetValue(pick(i,['backdrops','backdrop','horizontal_poster','still_path','poster','posters']))}
 function imageUrl(v,w){v=assetValue(v);return v?ROOT+'/image?src='+encodeURIComponent(v)+'&w='+(w||600):''}
 function deviceId(){var d='';try{d=localStorage.getItem(DEVLS)||''}catch(e){}if(!d){d='tizen-'+Date.now().toString(36)+'-'+Math.floor(Math.random()*0xffffff).toString(36);try{localStorage.setItem(DEVLS,d)}catch(e){}}return d}
-function scaleStage(){var w=window.innerWidth||1920,h=window.innerHeight||1080,s=Math.min(w/1920,h/1080),el=q('stage');el.style.transform='scale('+s+')';el.style.left=Math.round((w-1920*s)/2)+'px';el.style.top=Math.round((h-1080*s)/2)+'px'}
+function scaleStage(){var el=q('stage');el.style.transform='none';el.style.left='0';el.style.top='0';el.style.width='100vw';el.style.height='100vh'}
 window.addEventListener('resize',scaleStage);scaleStage();
 
 function loadCfg(){try{cfg=JSON.parse(localStorage.getItem(LS)||'{}')}catch(e){cfg={}};q('protocol').value=cfg.protocol||'http';q('host').value=cfg.host||'';q('port').value=cfg.port||'5666';q('code').value=cfg.code||'';q('username').value=cfg.username||'';q('password').value=''}
