@@ -46,7 +46,7 @@
             }
         }
 
-        return names.map(function (n) {
+        names.sort();\n        return names.map(function (n) {
             return n + "=" + values[n];
         }).join("&");
     }
