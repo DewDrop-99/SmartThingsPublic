@@ -2,15 +2,17 @@
 
 (function () {
     var http = require("http");
+    var https = require("https");
     var crypto = require("crypto");
-    var fetch = require("node-fetch");
 
     var PORT = 8765;
-    var SIGN_SECRET = "NDzZTVxnRKP8Z0jXg1VAMonaG8akvh";
-    var API_KEY = "33AF5200-D827-4E6A-889D-96103DF6B92F";
+    var API_KEY = "NDzZTVxnRKP8Z0jXg1VAMonaG8akvh";
+    var API_SECRET = "16CCEB3D-AB42-077D-36A1-F355324E4237";
 
     function md5(value) {
-        return crypto.createHash("md5").update(String(value == null ? "" : value), "utf8").digest("hex");
+        return crypto.createHash("md5")
+            .update(String(value == null ? "" : value), "utf8")
+            .digest("hex");
     }
 
     function safeDecode(value) {
@@ -21,8 +23,8 @@
         }
     }
 
-    // OkHttp HttpUrl.queryParameterNames + queryParameter(name):
-    // unique parameter names, in URL order, decoded, then key=value joined by &.
+    // Matches the Android SignerInterceptor behaviour for GET requests:
+    // query parameter names are canonicalised and key=value pairs form paramContent.
     function getQueryParamContent(path) {
         var q = String(path || "").indexOf("?");
         if (q < 0) return "";
@@ -46,28 +48,32 @@
             }
         }
 
-        names.sort();\n        return names.map(function (n) {
+        names.sort();
+        return names.map(function (n) {
             return n + "=" + values[n];
         }).join("&");
     }
 
     function makeAuthx(path, method, bodyText) {
-        var nonce = String(Math.floor(Math.random() * 2147483646) + 1);
+        // Official clients use a six-digit nonce.
+        var nonce = String(Math.floor(Math.random() * 900000) + 100000);
         var timestamp = String(Date.now());
+        var cleanPath = String(path || "").split("?")[0];
         var paramContent = String(method || "GET").toUpperCase() === "GET"
             ? getQueryParamContent(path)
             : String(bodyText || "");
-        var paramDigest = md5(paramContent);
-        var sign = md5([
-            SIGN_SECRET,
-            String(path || "").split("?")[0],
+
+        var payloadMd5 = md5(paramContent);
+        var signRaw = [
+            API_KEY,
+            cleanPath,
             nonce,
             timestamp,
-            paramDigest,
-            API_KEY
-        ].join("_"));
+            payloadMd5,
+            API_SECRET
+        ].join("_");
 
-        return "nonce=" + nonce + "&timestamp=" + timestamp + "&sign=" + sign;
+        return "nonce=" + nonce + "&timestamp=" + timestamp + "&sign=" + md5(signRaw);
     }
 
     function send(res, status, body, contentType) {
@@ -94,6 +100,51 @@
         req.on("end", function () {
             callback(Buffer.concat(chunks).toString("utf8"));
         });
+    }
+
+    function upstreamRequest(targetUrl, method, headers, bodyText, callback) {
+        var parsed;
+        try {
+            parsed = new URL(targetUrl);
+        } catch (e) {
+            callback(e);
+            return;
+        }
+
+        var transport = parsed.protocol === "https:" ? https : http;
+        var opts = {
+            protocol: parsed.protocol,
+            hostname: parsed.hostname,
+            port: parsed.port || (parsed.protocol === "https:" ? 443 : 80),
+            path: parsed.pathname + parsed.search,
+            method: method,
+            headers: headers
+        };
+
+        // FygoOS can use a self-signed certificate on the local HTTPS port.
+        if (parsed.protocol === "https:") opts.rejectUnauthorized = false;
+
+        var upstream = transport.request(opts, function (response) {
+            var chunks = [];
+            response.on("data", function (chunk) { chunks.push(chunk); });
+            response.on("end", function () {
+                callback(null, {
+                    status: response.statusCode || 200,
+                    contentType: response.headers["content-type"] || "application/json; charset=utf-8",
+                    body: Buffer.concat(chunks).toString("utf8")
+                });
+            });
+        });
+
+        upstream.setTimeout(10000, function () {
+            upstream.destroy(new Error("timeout"));
+        });
+        upstream.on("error", function (err) { callback(err); });
+
+        if (method !== "GET" && method !== "HEAD" && bodyText) {
+            upstream.write(bodyText);
+        }
+        upstream.end();
     }
 
     var server = http.createServer(function (req, res) {
@@ -139,36 +190,25 @@
             };
 
             if (env.accessCode) headers["x-access-code"] = String(env.accessCode);
+            if (bodyText && method !== "GET" && method !== "HEAD") {
+                headers["Content-Length"] = Buffer.byteLength(bodyText, "utf8");
+            }
 
-            var opts = { method: method, headers: headers };
-            if (method !== "GET" && method !== "HEAD") opts.body = bodyText;
-
-            fetch(target, opts)
-                .then(function (upstream) {
-                    return upstream.text().then(function (text) {
-                        send(
-                            res,
-                            upstream.status || 200,
-                            text,
-                            upstream.headers && upstream.headers.get
-                                ? (upstream.headers.get("content-type") || "application/json; charset=utf-8")
-                                : "application/json; charset=utf-8"
-                        );
-                    });
-                })
-                .catch(function (err) {
+            upstreamRequest(target, method, headers, bodyText, function (err, result) {
+                if (err) {
                     send(res, 502, JSON.stringify({
                         code: 502,
                         msg: "Fygo proxy: " + (err && err.message ? err.message : String(err)),
                         data: null
                     }));
-                });
+                    return;
+                }
+                send(res, result.status, result.body, result.contentType);
+            });
         });
     });
 
     server.on("error", function (err) {
-        // TizenBrew keeps services alive. If this module is reloaded while the
-        // previous instance still owns the port, that existing proxy is usable.
         if (!err || err.code !== "EADDRINUSE") throw err;
     });
 
