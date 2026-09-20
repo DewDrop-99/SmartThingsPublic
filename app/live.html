@@ -148,8 +148,12 @@ button{cursor:pointer}
 <div id="detail" class="hide">
   <div id="detailBackdrop" class="backdrop"></div>
   <div class="detailTop">
-    <button id="detailBack" class="roundBtn focusable">←</button>
-    <button class="roundBtn focusable">•••</button>
+    <button id="detailBack" class="roundBtn focusable"><img class="apkRoundIcon" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAQAAACQ9RH5AAABSklEQVRYw+2WvU3DABBG31lpM4AZgAW8AEqNTR1RYwZgAUIN9DBAPEAWSA8TpMfpYYCjsZQ/O/mcpEDiXmf7fO/k72QbgiAIgiAIgj+IZ/7mn/5wsA7PfeofPm67aj2lKY9kzUFhdbeUjLKp/LbRbsWgh3RIyfr0KXWHdH08GLZVDWTpmHF7iy3p9ngdSGLPKUklqTSeJPZVVoe00niS2DezQlqlU8UuZrWzSqeJvdSyUscTxf7MlXj/VE91k6T1rPjg/PJYbZf4HVdutgWVVimKraJgprS0F26pj5EnHQ2XNtFa2oKCp/7yZF9Lk1oaNqPglfpMYgCbmdTSoOJei0cSN4kLLQ1bMlF3QxI3iReyXNqNRH006rrZat0OhdPzHyTnjhTDGdnP3nd4yTUXwJfdnEHcyDPmNhc+HzkplS3iTzUIgiAIgn/NL+gMbfXao/7xAAAAAElFTkSuQmCC" alt=""></button>
+    <button id="moreBtn" class="roundBtn focusable"><img class="apkRoundIcon" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAQAAABIkb+zAAAAx0lEQVR42u3WMRECMRBG4dwpiIRIOQlIwkHiACygJDgITn4aCoa5XRiKY4H39W8nmyZJCQAAAAAAAAAAAACAO1rUNCRJXQeVqN36sKyqR1U5WmeP61rT/ZFbd/bAKkuN1FnjijxLlG42N9i7++3CdOaNdPdGRpRuMgfKX3CaYnTzt79T9gIXtztH6ewFTm8eZOvOedI9JUrnrdDMcS1S97tfiZSUV26lvfQp27R79qU43m5mqNlP+qc7AAAAAAAAAAAAAMB/uAI2IzCvQNAm4QAAAABJRU5ErkJggg==" alt=""></button>
+  </div>
+  <div id="detailMenu" class="detailMenu hide">
+    <button id="menuFavorite" class="focusable">Adicionar aos favoritos</button>
+    <button id="menuWatched" class="focusable">Marcar como visto</button>
   </div>
   <div class="detailBody">
     <h1 id="detailTitle" class="detailTitle"></h1>
@@ -164,7 +168,7 @@ button{cursor:pointer}
       <button id="favoriteBtn" class="circleAction focusable" aria-label="Favorito">♡</button>
       <button id="watchedBtn" class="circleAction focusable" aria-label="Visto">◉</button>
     </div>
-    <div id="qualityRow" class="qualityRow"><button class="qualityBtn selected focusable">Original</button></div>
+    <div id="qualityRow" class="qualityRow"><span class="qualityBtn selected">Original</span></div>
     <div id="overview" class="overview"></div>
     <div class="subheading">Cast & Crew</div>
     <div id="castRail" class="rail"><div class="empty">Disponível numa próxima revisão.</div></div>
