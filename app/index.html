@@ -7,70 +7,59 @@
 <style>
 html,body{margin:0;width:100%;height:100%;background:#1d1d1f;color:#fff;font-family:Arial,sans-serif}
 .wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
-.box{text-align:center}
-.logo{font-size:46px;font-weight:700;font-style:italic;margin-bottom:22px}
-.logo b{color:#1b8cff}
-.msg{font-size:24px;color:#bbb}
-.err{margin-top:12px;font-size:17px;color:#888}
+.box{text-align:center}.logo{font-size:46px;font-weight:700;font-style:italic;margin-bottom:22px}
+.logo b{color:#1b8cff}.msg{font-size:24px;color:#bbb}.err{margin-top:12px;font-size:17px;color:#888}
 </style>
 </head>
 <body>
 <div class="wrap"><div class="box">
   <div class="logo"><b>Fygo</b> TV</div>
-  <div id="msg" class="msg">A atualizar…</div>
-  <div id="err" class="err"></div>
+  <div id="msg" class="msg">A carregar versão live…</div>
+  <div id="err" class="err">Loader 0.7.0</div>
 </div></div>
 <script>
 (function(){
-  var OWNER='DewDrop-99';
-  var REPO='SmartThingsPublic';
-  var BRANCH='fygotv-tizenbrew';
-  var KEY='fygo_live_sha_v1';
+  var RAW='https://raw.githubusercontent.com/DewDrop-99/SmartThingsPublic/fygotv-tizenbrew/app/live.html';
+  var CDN='https://cdn.jsdelivr.net/gh/DewDrop-99/SmartThingsPublic@fygotv-tizenbrew/app/live.html';
+  var CACHE='fygo_live_html_v2';
   var stamp=Date.now();
 
-  function text(url){
-    return fetch(url,{headers:{'Accept':'text/plain,*/*'}}).then(function(r){
-      if(!r.ok)throw Error('HTTP '+r.status);
-      return r.text();
+  function valid(html){
+    return html && html.indexOf('<!doctype html>')>=0 && html.indexOf('FYGO_LIVE_APP')>=0;
+  }
+  function inject(html){
+    if(!valid(html))throw Error('frontend live inválido');
+    try{localStorage.setItem(CACHE,html)}catch(e){}
+    document.open();document.write(html);document.close();
+  }
+  function xhr(url){
+    return new Promise(function(resolve,reject){
+      var x=new XMLHttpRequest();
+      x.open('GET',url+(url.indexOf('?')>=0?'&':'?')+'_='+stamp,true);
+      x.timeout=9000;
+      x.onreadystatechange=function(){
+        if(x.readyState===4){
+          if(x.status>=200&&x.status<300)resolve(x.responseText);
+          else reject(Error('HTTP '+x.status));
+        }
+      };
+      x.onerror=function(){reject(Error('rede'))};
+      x.ontimeout=function(){reject(Error('timeout'))};
+      x.send();
     });
   }
-
-  function loadHtml(html,sha){
-    if(!html||html.indexOf('<html')<0)throw Error('frontend inválido');
-    try{if(sha)localStorage.setItem(KEY,sha)}catch(e){}
-    document.open();
-    document.write(html);
-    document.close();
+  function cached(){
+    var h='';try{h=localStorage.getItem(CACHE)||''}catch(e){}
+    if(valid(h)){inject(h);return true}
+    return false;
   }
 
-  function fromSha(sha){
-    var url='https://cdn.jsdelivr.net/gh/'+OWNER+'/'+REPO+'@'+sha+'/app/live.html?_='+stamp;
-    return text(url).then(function(html){loadHtml(html,sha)});
-  }
-
-  function latest(){
-    var api='https://api.github.com/repos/'+OWNER+'/'+REPO+'/commits/'+BRANCH+'?_='+stamp;
-    return fetch(api,{headers:{'Accept':'application/vnd.github+json'}}).then(function(r){
-      if(!r.ok)throw Error('GitHub HTTP '+r.status);
-      return r.json();
-    }).then(function(j){
-      if(!j||!j.sha)throw Error('SHA indisponível');
-      return fromSha(j.sha);
-    });
-  }
-
-  function oldSha(){
-    var sha='';
-    try{sha=localStorage.getItem(KEY)||''}catch(e){}
-    return sha?fromSha(sha):Promise.reject(Error('sem versão em cache'));
-  }
-
-  latest().catch(function(e1){
-    document.getElementById('err').textContent='A usar a última versão disponível…';
-    return oldSha().catch(function(e2){
-      // Last-resort bundled copy from the same installed module.
-      window.location.replace('stable.html');
-    });
+  xhr(RAW).then(inject).catch(function(){
+    return xhr(CDN).then(inject);
+  }).catch(function(e){
+    if(cached())return;
+    document.getElementById('err').textContent='Sem acesso à versão live; a abrir cópia estável.';
+    setTimeout(function(){window.location.replace('stable.html')},800);
   });
 })();
 </script>
