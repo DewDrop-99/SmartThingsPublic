@@ -15,7 +15,7 @@ h1{font-size:42px}.rail{display:flex;gap:22px;flex-wrap:wrap}.card{width:230px;b
 <div id="player" class="player hide"><video id="video"></video><div class="hud"><div id="ptitle"></div><div id="perror" class="err"></div><div class="actions"><button id="rw" class="btn">−10 s</button><button id="pp" class="btn primary">Play/Pause</button><button id="ff" class="btn">+10 s</button><button id="closePlayer" class="btn">Voltar</button></div></div></div>
 <script>
 (function(){
-var cfg={},libs=[],item=null,LS='fygo_tb_cfg_v1',DEVLS='fygo_tb_device_v1',PROXY='http://127.0.0.1:8765/fygo';
+var cfg={},libs=[],item=null,LS='fygo_tb_cfg_v1',DEVLS='fygo_tb_device_v1',PROXY='http://127.0.0.1:8766/fygo';
 function q(x){return document.getElementById(x)} function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function load(){try{cfg=JSON.parse(localStorage.getItem(LS)||'{}')}catch(e){cfg={}};q('protocol').value=cfg.protocol||'http';q('host').value=cfg.host||'';q('port').value=cfg.port||'5666';q('code').value=cfg.code||''}
 function read(){cfg={protocol:q('protocol').value,host:q('host').value.trim().replace(/^https?:\/\//,'').replace(/\/$/,''),port:q('port').value.trim(),code:q('code').value.trim()};return cfg}
