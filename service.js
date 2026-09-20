@@ -3,6 +3,7 @@
 (function () {
     var http = require("http");
     var https = require("https");
+    var urlLib = require("url");
     var crypto = require("crypto");
 
     var PORT = 8765;
@@ -105,7 +106,7 @@
     function upstreamRequest(targetUrl, method, headers, bodyText, callback) {
         var parsed;
         try {
-            parsed = new URL(targetUrl);
+            parsed = urlLib.parse(targetUrl);
         } catch (e) {
             callback(e);
             return;
@@ -116,7 +117,7 @@
             protocol: parsed.protocol,
             hostname: parsed.hostname,
             port: parsed.port || (parsed.protocol === "https:" ? 443 : 80),
-            path: parsed.pathname + parsed.search,
+            path: (parsed.pathname || "/") + (parsed.search || ""),
             method: method,
             headers: headers
         };
