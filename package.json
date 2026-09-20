@@ -1,6 +1,6 @@
 {
   "name": "fygotv-tizenbrew",
-  "version": "0.5.3",
+  "version": "0.6.0",
   "description": "Fygo TV client for Samsung Tizen via TizenBrew",
   "packageType": "app",
   "appName": "Fygo TV",
