@@ -1,0 +1,9 @@
+{
+  "name": "fygotv-tizenbrew",
+  "version": "0.1.0",
+  "description": "Fygo TV client for Samsung Tizen via TizenBrew",
+  "packageType": "app",
+  "appName": "Fygo TV",
+  "appPath": "app/index.html",
+  "keys": ["MediaPlayPause","MediaPlay","MediaPause","MediaStop","MediaRewind","MediaFastForward"]
+}
